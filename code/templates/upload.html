@@ -1,0 +1,639 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if current_user.is_authenticated %}
+    <div class="min-h-screen flex items-center justify-center bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="w-full max-w-md space-y-8">
+            <!-- Existing upload form content -->
+            <!DOCTYPE html>
+            <html lang="en" class="light">
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>AI Resume Analysis | {{ data.name }}</title>
+              <script src="https://cdn.tailwindcss.com"></script>
+              <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+              <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+              <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+              <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+              <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+              <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+              <style>
+                @keyframes fadeIn {
+                  from { opacity: 0; transform: translateY(10px); }
+                  to { opacity: 1; transform: translateY(0); }
+                }
+                .fade-in {
+                  animation: fadeIn 0.6s ease-out forwards;
+                }
+                .skill-meter {
+                  height: 8px;
+                  border-radius: 4px;
+                  background: linear-gradient(90deg, #4f46e5, #8b5cf6);
+                }
+                .glow-card {
+                  box-shadow: 0 4px 30px rgba(79, 70, 229, 0.15);
+                }
+                .dark .glow-card {
+                  box-shadow: 0 4px 30px rgba(79, 70, 229, 0.3);
+                }
+              </style>
+            </head>
+            <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans transition-colors duration-300">
+              <div id="particles-js" class="fixed inset-0 z-0 pointer-events-none"></div>
+              <div class="min-h-screen p-4 md:p-8">
+                <!-- Header -->
+                <header class="max-w-6xl mx-auto mb-8">
+                  <div class="flex flex-col md:flex-row justify-between items-center bg-white/10 backdrop-blur-lg rounded-xl p-6 shadow-lg animate__animated animate__fadeIn">
+                    <div class="flex-1">
+                      <div class="flex items-center space-x-4">
+                        <!-- Avatar -->
+                        <div class="h-20 w-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-2xl font-bold text-white shadow-lg">
+                          {{ data.name[:2].upper() }}
+                        </div>
+                        <!-- Name and Roles -->
+                        <div>
+                          <h1 class="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text text-transparent">
+                            {{ data.name }}
+                          </h1>
+                          <div class="flex items-center mt-2 space-x-3">
+                            <div class="flex items-center text-gray-400">
+                              <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                              </svg>
+                              <span>{{ data.current_role }}</span>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                            </svg>
+                            <div class="flex items-center text-gray-400">
+                              <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                              </svg>
+                              <span>{{ data.target_role }}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Scores -->
+                    <div class="mt-4 md:mt-0 flex items-center space-x-6">
+                      <div class="text-center">
+                        <div class="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-teal-600 bg-clip-text text-transparent">
+                          {{ data.ats_score.score }}%
+                        </div>
+                        <div class="text-sm text-gray-400">ATS Score</div>
+                      </div>
+                      <div class="text-center">
+                        <div class="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text text-transparent">
+                          {{ data.job_fit.score }}%
+                        </div>
+                        <div class="text-sm text-gray-400">Job Fit</div>
+                      </div>
+                    </div>
+                  </div>
+                </header>
+                <!-- Main Content -->
+                <main class="max-w-6xl mx-auto" id="report-section">
+                  <!-- Candidate Overview -->
+                  <section class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-8 glow-card animate__animated animate__fadeIn">
+                    <div class="p-6 md:p-8">
+                      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                        <div>
+                          <h2 class="text-2xl font-bold">{{ data.name }}</h2>
+                          <p class="text-gray-500 dark:text-gray-400">{{ data.education }}</p>
+                          <p class="text-gray-500 dark:text-gray-400">{{ data.experience }} of experience</p>
+                        </div>
+                        <div class="mt-4 md:mt-0">
+                          <div class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                            {{ data.job_fit.score }}%
+                          </div>
+                          <div class="font-medium">Job Fit Score</div>
+                          <div class="text-sm text-gray-500 dark:text-gray-400">for {{ data.job_title }}</div>
+                        </div>
+                      </div>
+                      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Strengths -->
+                        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-800 dark:to-gray-900 p-6 rounded-xl shadow-lg">
+                          <h3 class="text-lg font-semibold text-emerald-700 dark:text-emerald-400 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Key Strengths
+                          </h3>
+                          <div class="grid gap-4">
+                            {% for strength in data.strengths %}
+                            <div class="animate__animated animate__fadeInUp bg-white/50 dark:bg-gray-800/50 rounded-lg p-4 backdrop-blur-sm transform transition-all duration-300 hover:scale-102 hover:shadow-md" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+                              <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                  {% if strength.icon == "code" %}
+                                  <div class="p-3 bg-emerald-100 dark:bg-emerald-900 rounded-lg">
+                                    <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                                    </svg>
+                                  </div>
+                                  {% elif strength.icon == "chip" %}
+                                  <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                                    </svg>
+                                  </div>
+                                  {% else %}
+                                  <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                                    <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
+                                    </svg>
+                                  </div>
+                                  {% endif %}
+                                </div>
+                                <div class="flex-1">
+                                  <h4 class="font-semibold text-emerald-700 dark:text-emerald-400 text-lg mb-1">
+                                    {{ strength.title }}
+                                  </h4>
+                                  <p class="text-emerald-600 dark:text-emerald-300 text-sm">
+                                    {{ strength.details }}
+                                  </p>
+                                  {% if strength.relevance %}
+                                  <div class="mt-2">
+                                    <div class="flex items-center justify-between text-xs text-emerald-600 dark:text-emerald-400">
+                                      <span>Relevance</span>
+                                      <span>{{ strength.relevance }}%</span>
+                                    </div>
+                                    <div class="mt-1 h-1.5 w-full bg-emerald-100 dark:bg-emerald-900 rounded-full overflow-hidden">
+                                      <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full" style="width: {{ strength.relevance }}%"></div>
+                                    </div>
+                                  </div>
+                                  {% endif %}
+                                </div>
+                              </div>
+                            </div>
+                            {% endfor %}
+                          </div>
+                        </div>
+                        <!-- Improvement Areas -->
+                        <div class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-gray-800 dark:to-gray-900 p-6 rounded-xl shadow-lg">
+                          <h3 class="text-lg font-semibold text-amber-700 dark:text-amber-400 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            Areas for Improvement
+                          </h3>
+                          <ul class="space-y-3">
+                            {% for area in data.improvement_areas %}
+                            <li class="animate__animated animate__fadeInUp" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+                              <div class="flex items-start">
+                                <div class="bg-amber-100 dark:bg-amber-900 rounded-lg p-2 mr-3 flex-shrink-0">
+                                  <svg class="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                  </svg>
+                                </div>
+                                <div>
+                                  <div class="flex items-center">
+                                    <h4 class="font-medium text-amber-700 dark:text-amber-400">{{ area.title }}</h4>
+                                    <span class="ml-2 px-2 py-1 text-xs rounded-full 
+                                        {% if area.priority == 'high' %}bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400
+                                        {% elif area.priority == 'medium' %}bg-amber-100 text-amber-600 dark:bg-amber-900 dark:text-amber-400
+                                        {% else %}bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400{% endif %}">
+                                        {{ area.priority }}
+                                    </span>
+                                  </div>
+                                  <p class="text-sm text-amber-600 dark:text-amber-300 mt-1">{{ area.details }}</p>
+                                </div>
+                              </div>
+                            </li>
+                            {% endfor %}
+                          </ul>
+                        </div>
+                        <!-- Recommendations -->
+                        <div class="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 p-6 rounded-xl shadow-lg">
+                          <h3 class="text-lg font-semibold text-violet-700 dark:text-violet-400 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            Recommendations
+                          </h3>
+                          <ul class="space-y-3">
+                            {% for rec in data.recommendations %}
+                            <li class="animate__animated animate__fadeInUp" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+                              <div class="flex items-start">
+                                <div class="bg-violet-100 dark:bg-violet-900 rounded-lg p-2 mr-3 flex-shrink-0">
+                                  <svg class="w-4 h-4 text-violet-600 dark:text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    {% if rec.type == "certification" %}
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                                    {% else %}
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    {% endif %}
+                                  </svg>
+                                </div>
+                                <div>
+                                  <div class="flex items-center">
+                                    <h4 class="font-medium text-violet-700 dark:text-violet-400">{{ rec.title }}</h4>
+                                    <span class="ml-2 px-2 py-1 text-xs rounded-full 
+                                        {% if rec.priority == 'high' %}bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400
+                                        {% elif rec.priority == 'medium' %}bg-amber-100 text-amber-600 dark:bg-amber-900 dark:text-amber-400
+                                        {% else %}bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400{% endif %}">
+                                        {{ rec.priority }}
+                                    </span>
+                                  </div>
+                                  <p class="text-sm text-violet-600 dark:text-violet-300 mt-1">{{ rec.details }}</p>
+                                </div>
+                              </div>
+                            </li>
+                            {% endfor %}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  <!-- Job Fit Score Section -->
+                  <section class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-8 glow-card">
+                    <div class="p-6 md:p-8">
+                      <!-- Job Fit Overview -->
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <!-- Main Job Fit Score -->
+                        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6">
+                          <h3 class="text-lg font-semibold mb-4 text-indigo-700 dark:text-indigo-300">Overall Job Fit</h3>
+                          <div class="flex items-center justify-between">
+                            <div class="relative w-36 h-36">
+                              <!-- Circular Progress -->
+                              <svg class="w-full h-full" viewBox="0 0 36 36">
+                                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                    fill="none" stroke="#E2E8F0" stroke-width="3" />
+                                <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                    fill="none" stroke="url(#gradient)" stroke-width="3" stroke-dasharray="{{ data.job_fit.score }}, 100" />
+                              </svg>
+                              <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                                <div class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                                  {{ data.job_fit.score }}%
+                                </div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400">Job Fit</div>
+                              </div>
+                            </div>
+                            <div class="flex-1 ml-6">
+                              <div class="space-y-4">
+                                <!-- Technical Match -->
+                                <div>
+                                  <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">Technical Match</span>
+                                    <span class="text-sm text-indigo-600 dark:text-indigo-400">{{ data.job_fit.technical_match }}%</span>
+                                  </div>
+                                  <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full"
+                                          style="width: {{ data.job_fit.technical_match }}%"></div>
+                                  </div>
+                                </div>
+                                <!-- Experience Match -->
+                                <div>
+                                  <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">Experience Match</span>
+                                    <span class="text-sm text-indigo-600 dark:text-indigo-400">{{ data.job_fit.experience_match }}%</span>
+                                  </div>
+                                  <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full"
+                                          style="width: {{ data.job_fit.experience_match }}%"></div>
+                                  </div>
+                                </div>
+                                <!-- Education Match -->
+                                <div>
+                                  <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">Education Match</span>
+                                    <span class="text-sm text-indigo-600 dark:text-indigo-400">{{ data.job_fit.education_match }}%</span>
+                                  </div>
+                                  <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                    <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full"
+                                          style="width: {{ data.job_fit.education_match }}%"></div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Detailed Breakdown -->
+                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-xl p-6">
+                          <h3 class="text-lg font-semibold mb-4 text-blue-700 dark:text-blue-300">Detailed Breakdown</h3>
+                          <div class="space-y-4">
+                            {% for category, score in data.job_fit.breakdown.items() %}
+                            <div>
+                              <div class="flex justify-between mb-1">
+                                <span class="text-sm font-medium text-blue-600 dark:text-blue-400">
+                                  {{ category|replace('_', ' ')|title }}
+                                </span>
+                                <span class="text-sm text-blue-600 dark:text-blue-400">{{ score }}%</span>
+                              </div>
+                              <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full"
+                                      style="width: {{ score }}%"></div>
+                              </div>
+                            </div>
+                            {% endfor %}
+                          </div>
+                        </div>
+                      </div>
+                      <!-- ATS Score Section -->
+                      <div class="mt-8">
+                        <h3 class="text-lg font-semibold mb-4">ATS Optimization Score</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                          <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-800 dark:to-gray-900 rounded-xl p-4">
+                            <div class="text-center">
+                              <div class="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
+                                {{ data.ats_score.score }}%
+                              </div>
+                              <div class="text-sm text-emerald-600 dark:text-emerald-400">Overall ATS Score</div>
+                            </div>
+                          </div>
+                          <div class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-gray-800 dark:to-gray-900 rounded-xl p-4">
+                            <div class="text-center">
+                              <div class="text-3xl font-bold text-amber-600 dark:text-amber-400">
+                                {{ data.ats_score.format_score }}%
+                              </div>
+                              <div class="text-sm text-amber-600 dark:text-amber-400">Format Score</div>
+                            </div>
+                          </div>
+                          <div class="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-gray-800 dark:to-gray-900 rounded-xl p-4">
+                            <div class="text-center">
+                              <div class="text-3xl font-bold text-rose-600 dark:text-rose-400">
+                                {{ data.ats_score.keyword_score }}%
+                              </div>
+                              <div class="text-sm text-rose-600 dark:text-rose-400">Keyword Score</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  <!-- Add this to the head section for the gradient definition -->
+                  <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" style="stop-color:#6366f1" />
+                      <stop offset="100%" style="stop-color:#8b5cf6" />
+                    </linearGradient>
+                  </defs>
+                  <!-- Skills Analysis -->
+                  <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <!-- Tech Stack Radar Chart -->
+                    <div class="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg p-6 glow-card fade-in backdrop-blur-lg" style="animation-delay: 0.1s">
+                      <h3 class="text-xl font-semibold mb-4 text-indigo-700 dark:text-indigo-300">Technical Skills Radar</h3>
+                      <canvas id="techChart" height="300"></canvas>
+                    </div>
+                    <!-- Skills by Category -->
+                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg p-6 glow-card fade-in backdrop-blur-lg" style="animation-delay: 0.2s">
+                      <h3 class="text-xl font-semibold mb-4 text-blue-700 dark:text-blue-300">Skills Distribution</h3>
+                      <canvas id="categoryChart" height="300"></canvas>
+                    </div>
+                  </section>
+                  <!-- Skills Match Analysis -->
+                  <section class="bg-gradient-to-r from-violet-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg p-6 mb-8 glow-card fade-in backdrop-blur-lg" style="animation-delay: 0.3s">
+                    <h3 class="text-xl font-semibold mb-4 text-violet-700 dark:text-violet-300">Skills Match Analysis</h3>
+                    <div class="mb-6">
+                      <h4 class="font-medium mb-3 text-purple-700 dark:text-purple-300">Top Matching Skills</h4>
+                      <div class="space-y-3">
+                        {% for skill in data.top_matches %}
+                        <div>
+                          <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium">{{ skill.name }}</span>
+                            <span class="text-sm text-purple-600 dark:text-purple-400">{{ skill.match }}% match</span>
+                          </div>
+                          <div class="w-full bg-purple-100 dark:bg-gray-700 rounded-full h-2.5">
+                            <div class="bg-gradient-to-r from-purple-500 to-indigo-500 h-2.5 rounded-full" style="width: {{ skill.match }}%"></div>
+                          </div>
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <!-- Present Skills -->
+                      <div class="bg-emerald-50/50 dark:bg-gray-800/50 p-4 rounded-lg backdrop-blur-sm">
+                        <h4 class="font-medium mb-3 text-emerald-700 dark:text-emerald-300">Present Skills</h4>
+                        <div class="flex flex-wrap gap-2">
+                          {% for skill in data.present_skills %}
+                          <span class="px-3 py-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full text-sm flex items-center shadow-sm">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            {{ skill }}
+                          </span>
+                          {% endfor %}
+                        </div>
+                      </div>
+                      <!-- Missing Skills -->
+                      <div class="bg-rose-50/50 dark:bg-gray-800/50 p-4 rounded-lg backdrop-blur-sm">
+                        <h4 class="font-medium mb-3 text-rose-700 dark:text-rose-300">Missing Skills</h4>
+                        <div class="flex flex-wrap gap-2">
+                          {% for skill in data.missing_skills %}
+                          <span class="px-3 py-1 bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-full text-sm flex items-center shadow-sm">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            {{ skill }}
+                          </span>
+                          {% endfor %}
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                  <!-- Detailed Analysis -->
+                  <section class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 glow-card fade-in" style="animation-delay: 0.4s">
+                    <h3 class="text-xl font-semibold mb-4">Detailed Fit Analysis</h3>
+                    <div class="prose dark:prose-invert max-w-none">
+                      {{ data.fit_analysis|safe }}
+                    </div>
+                    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <h4 class="font-medium mb-3">Required Skills Breakdown</h4>
+                        <ul class="space-y-2">
+                          {% for skill in data.required_skills %}
+                          <li class="flex items-start">
+                            <svg class="h-5 w-5 text-indigo-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>{{ skill }}</span>
+                          </li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 class="font-medium mb-3">Career Recommendations</h4>
+                        <ul class="space-y-3">
+                          {% for rec in data.career_recommendations %}
+                          <li class="flex items-start bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                            <svg class="h-5 w-5 text-purple-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
+                            <span>{{ rec }}</span>
+                          </li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                    </div>
+                  </section>
+                </main>
+                <!-- Export Buttons -->
+                <div class="max-w-6xl mx-auto mt-8 flex flex-wrap justify-center gap-4">
+                  <button onclick="exportAsImage()" class="px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg shadow-lg hover:shadow-xl transition-all flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Export as PNG
+                  </button>
+                  <button onclick="exportAsPDF()" class="px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg shadow-lg hover:shadow-xl transition-all flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Export as PDF
+                  </button>
+                  <button onclick="window.print()" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg shadow-lg hover:shadow-xl transition-all flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    Print Report
+                  </button>
+                </div>
+              </div>
+              <script>
+                // Chart Configurations
+                document.addEventListener('DOMContentLoaded', function() {
+                  // Tech Radar Chart
+                  const techCtx = document.getElementById('techChart').getContext('2d');
+                  const techChart = new Chart(techCtx, {
+                    type: 'radar',
+                    data: {
+                      labels: {{ data.tech_stack.keys()|list|tojson }},
+                      datasets: [{
+                        label: 'Skill Level',
+                        data: {{ data.tech_stack.values()|list|tojson }},
+                        backgroundColor: 'rgba(129, 140, 248, 0.2)',
+                        borderColor: 'rgba(129, 140, 248, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(99, 102, 241, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(99, 102, 241, 1)',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        r: {
+                          angleLines: {
+                            color: 'rgba(200, 200, 200, 0.3)'
+                          },
+                          suggestedMin: 0,
+                          suggestedMax: 5,
+                          ticks: {
+                            backdropColor: 'transparent'
+                          }
+                        }
+                      },
+                      plugins: {
+                        legend: {
+                          display: false
+                        }
+                      }
+                    }
+                  });
+                  // Category Doughnut Chart
+                  const catCtx = document.getElementById('categoryChart').getContext('2d');
+                  const catChart = new Chart(catCtx, {
+                    type: 'doughnut',
+                    data: {
+                      labels: {{ data.categories.keys()|list|tojson }},
+                      datasets: [{
+                        data: {{ data.categories.values()|list|tojson }},
+                        backgroundColor: [
+                          'rgba(79, 70, 229, 0.8)',  // Indigo
+                          'rgba(147, 51, 234, 0.8)',  // Purple
+                          'rgba(59, 130, 246, 0.8)',  // Blue
+                          'rgba(236, 72, 153, 0.8)'   // Pink
+                        ],
+                        borderColor: 'rgba(255, 255, 255, 0.5)',
+                        borderWidth: 2,
+                        hoverOffset: 15
+                      }]
+                    },
+                    options: {
+                      plugins: {
+                        legend: {
+                          position: 'right',
+                          labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 20,
+                            font: {
+                              family: 'Inter',
+                              size: 12
+                            }
+                          }
+                        }
+                      },
+                      cutout: '65%'
+                    }
+                  });
+                });
+                // Export Functions
+                function exportAsImage() {
+                  const element = document.getElementById('report-section');
+                  html2canvas(element, {
+                    scale: 2,
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true
+                  }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'resume-analysis-' + new Date().toISOString().slice(0, 10) + '.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                  });
+                }
+                function exportAsPDF() {
+                  const element = document.getElementById('report-section');
+                  html2canvas(element, {
+                    scale: 2,
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true
+                  }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+                    const imgWidth = 210;
+                    const pageHeight = 295;
+                    const imgHeight = canvas.height * imgWidth / canvas.width;
+                    let heightLeft = imgHeight;
+                    let position = 10;
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                    while (heightLeft >= 0) {
+                      position = heightLeft - imgHeight;
+                      pdf.addPage();
+                      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                      heightLeft -= pageHeight;
+                    }
+                    pdf.save('resume-analysis-' + new Date().toISOString().slice(0, 10) + '.pdf');
+                  });
+                }
+                // Theme Toggle
+                function toggleTheme() {
+                  const html = document.documentElement;
+                  html.classList.toggle('dark');
+                  localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+                }
+                // Load theme preference
+                if (localStorage.getItem('theme') === 'dark' ||
+                     (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark');
+                }
+                // Add fade-in animations
+                document.querySelectorAll('.fade-in').forEach((el, index) => {
+                  el.style.animationDelay = `${index * 0.1}s`;
+                });
+              </script>
+            </body>
+            </html>
+        </div>
+    </div>
+{% else %}
+    <script>
+        window.location.href = "{{ url_for('login', next=url_for('analyze')) }}";
+    </script>
+{% endif %}
+{% endblock %}

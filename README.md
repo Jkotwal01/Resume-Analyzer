@@ -54,29 +54,42 @@ python code/app.py
 ```
 
 ## 📱 Screenshots
-code
+
 <div align="center">
 
-### Landing Page
+### 🏠 Landing Page  
 <img src="./code/static/img/1.png" alt="Landing Page" width="800"/>
+
+### 💡 Feature Overview  
 <img src="./code/static/img/2.png" alt="Feature Overview" width="800"/>
-<img src="./code/static/img/3.png" alt="Statistics" width="800"/>
-*Modern and intuitive landing page with key features highlight*
 
-### Resume Upload
-<img src="./code/static/img/5.png" alt="Resume Upload Interface" width="800"/>
-*Simple and secure resume upload interface*
+### 📈 Statistics  
+<img src="./code/static/img/3.png" alt="Statistics" width="800"/>  
 
-### Analysis Results
-<img src="./code/static/img/6.png" alt="Analysis Results" width="800"/>
-*Detailed AI-powered resume analysis with recommendations*
+<em>Modern and intuitive landing page with key features highlighted</em>
 
-### Work Experience
-<img src="./code/static/img/7.png" alt="Work Experience Analysis" width="800"/>
-*Comprehensive skills analysis and Work Experience visualization*
+---
+
+### 📤 Resume Upload  
+<img src="./code/static/img/5.png" alt="Resume Upload Interface" width="800"/>  
+
+<em>Simple and secure resume upload interface</em>
+
+---
+
+### 📊 Analysis Results  
+<img src="./code/static/img/6.png" alt="Analysis Results" width="800"/>  
+
+<em>Detailed AI-powered resume analysis with recommendations</em>
+
+---
+
+### 👨‍💼 Work Experience  
+<img src="./code/static/img/7.png" alt="Work Experience Analysis" width="800"/>  
+
+<em>Comprehensive skills analysis and Work Experience visualization</em>
 
 </div>
-
 ## 🔒 Privacy & Security
 
 - All resume data is processed securely

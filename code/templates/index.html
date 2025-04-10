@@ -1,493 +1,361 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ResumeIQ - AI-Powered Resume Analysis</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #4361ee;
-            --secondary: #3f37c9;
-            --accent: #4895ef;
-            --light: #f8f9fa;
-            --dark: #212529;
-        }
+{% extends "base.html" %}
+
+{% block title %}ResuMIND - AI-Powered Resume Analysis{% endblock %}
+
+{% block content %}
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white py-3 shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <span class="gradient-text">ResuMIND</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#features">Features</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#how-it-works">How It Works</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#testimonials">Testimonials</a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-primary ms-2" href="/upload">Upload Resume</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container hero-content">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4 animate__animated animate__fadeInDown">AI-Powered Resume Analysis</h1>
+                <p class="lead mb-5 animate__animated animate__fadeInUp animate__delay-1s">Get instant feedback on your resume's strengths and weaknesses. Optimize for ATS and land more interviews.</p>
+                <a href="/upload" class="btn btn-primary btn-lg animate__animated animate__fadeInUp animate__delay-2s">Upload Your Resume <i class="fas fa-arrow-right ms-2"></i></a>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block animate__animated animate__fadeInRight animate__delay-1s">
+                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Resume Analysis" class="img-fluid rounded-4 shadow-lg">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-number">98%</div>
+                    <div class="stats-label">ATS Compatibility</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-number">10K+</div>
+                    <div class="stats-label">Resumes Analyzed</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-number">85%</div>
+                    <div class="stats-label">Interview Rate Increase</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-number">4.9</div>
+                    <div class="stats-label">User Rating</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3">Comprehensive Resume Analysis</h2>
+            <p class="lead text-muted">We analyze every aspect of your resume to give you actionable insights</p>
+        </div>
         
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-        }
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h4 class="card-title">Tech Stack Analysis</h4>
+                        <p class="card-text">Detailed breakdown of your technical skills and how they match job requirements.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h4 class="card-title">Experience Evaluation</h4>
+                        <p class="card-text">Analysis of your work history, roles, and measurable achievements.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h4 class="card-title">Education & Certifications</h4>
+                        <p class="card-text">Review of your academic background and professional certifications.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <h4 class="card-title">Project Analysis</h4>
+                        <p class="card-text">Evaluation of your projects, technologies used, and impact.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <h4 class="card-title">ATS Optimization</h4>
+                        <p class="card-text">Keyword analysis and suggestions to beat applicant tracking systems.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4 class="card-title">Career Recommendations</h4>
+                        <p class="card-text">Personalized suggestions for career growth based on your profile.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3">How It Works</h2>
+            <p class="lead text-muted">Get your personalized resume analysis in just 3 simple steps</p>
+        </div>
         
-        .hero-section {
-            background: url('https://images.unsplash.com/photo-1521791055366-0d553872125f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80') no-repeat center center;
-            background-size: cover;
-            position: relative;
-            padding: 100px 0;
-            color: white;
-        }
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 bg-transparent text-center">
+                    <div class="card-body">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-upload fa-2x"></i>
+                        </div>
+                        <h4 class="my-3">1. Upload Resume</h4>
+                        <p class="text-muted">Upload your resume in PDF or Word format. It's secure and private.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card border-0 bg-transparent text-center">
+                    <div class="card-body">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-cogs fa-2x"></i>
+                        </div>
+                        <h4 class="my-3">2. AI Analysis</h4>
+                        <p class="text-muted">Our advanced AI scans and analyzes every section of your resume.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card border-0 bg-transparent text-center">
+                    <div class="card-body">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-chart-pie fa-2x"></i>
+                        </div>
+                        <h4 class="my-3">3. Get Results</h4>
+                        <p class="text-muted">Receive detailed feedback and actionable recommendations.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-        }
+        <div class="text-center mt-5">
+            <a href="/upload" class="btn btn-primary btn-lg">Start Analyzing Now</a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section id="testimonials" class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3">Success Stories</h2>
+            <p class="lead text-muted">Hear from professionals who improved their resumes with ResuMIND</p>
+        </div>
         
-        .hero-content {
-            position: relative;
-            z-index: 1;
-        }
-        
-        .feature-card {
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            height: 100%;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-        }
-        
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: var(--accent);
-        }
-        
-        .btn-primary {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            padding: 10px 25px;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--secondary);
-            border-color: var(--secondary);
-            transform: translateY(-2px);
-        }
-        
-        .nav-link {
-            font-weight: 500;
-            color: var(--dark);
-            margin: 0 10px;
-            padding: 8px 15px;
-            border-radius: 50px;
-            transition: all 0.3s ease;
-        }
-        
-        .nav-link:hover {
-            background-color: rgba(67, 97, 238, 0.1);
-            color: var(--primary);
-        }
-        
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.8rem;
-            color: var(--primary);
-        }
-        
-        .stats-card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-        
-        .stats-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-        }
-        
-        .stats-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-        
-        .stats-label {
-            font-size: 1rem;
-            color: #6c757d;
-            font-weight: 500;
-        }
-        
-        .gradient-text {
-            background: linear-gradient(45deg, #4361ee, #4895ef);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-    </style>
-</head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white py-3 shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <span class="gradient-text">ResumeIQ</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#features">Features</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#how-it-works">How It Works</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#testimonials">Testimonials</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-primary ms-2" href="/analyze">Analyze Now</a>
-                    </li>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://randomuser.me/api/portraits/women/32.jpg" class="rounded-circle me-3" width="60" height="60" alt="User">
+                            <div>
+                                <h5 class="mb-0">Sarah Johnson</h5>
+                                <p class="text-muted mb-0">Software Engineer</p>
+                            </div>
+                        </div>
+                        <p class="card-text">"ResuMIND helped me identify the missing keywords in my resume. After implementing the suggestions, I got 3 interview calls in a week!"</p>
+                        <div class="text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://randomuser.me/api/portraits/men/45.jpg" class="rounded-circle me-3" width="60" height="60" alt="User">
+                            <div>
+                                <h5 class="mb-0">Michael Chen</h5>
+                                <p class="text-muted mb-0">Data Scientist</p>
+                            </div>
+                        </div>
+                        <p class="card-text">"The ATS optimization feature is a game-changer. I went from 0 responses to multiple interview invitations after using ResuMIND."</p>
+                        <div class="text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" class="rounded-circle me-3" width="60" height="60" alt="User">
+                            <div>
+                                <h5 class="mb-0">Priya Patel</h5>
+                                <p class="text-muted mb-0">Product Manager</p>
+                            </div>
+                        </div>
+                        <p class="card-text">"The career recommendations helped me position my experience better. I landed my dream job at a FAANG company thanks to ResuMIND."</p>
+                        <div class="text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-4">Ready to Transform Your Resume?</h2>
+        <p class="lead mb-5">Get instant feedback and start getting more interview calls today.</p>
+        <a href="/upload" class="btn btn-light btn-lg px-5">Upload Your Resume Now</a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="py-5 bg-dark text-white">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4 mb-md-0">
+                <h5 class="mb-3">ResuMIND</h5>
+                <p>AI-powered resume analysis to help you land your dream job.</p>
+                <div class="social-icons">
+                    <a href="https://www.linkedin.com/in/jay-kotwal-25322b2b7/" target="_blank" class="text-white me-3"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://github.com/Jkotwal01"  target="_blank"class="text-white me-3"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="col-md-2 mb-4 mb-md-0">
+                <h5 class="mb-3">Product</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Features</a></li>
+                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Pricing</a></li>
+                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">API</a></li>
                 </ul>
             </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="container hero-content">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <h1 class="display-4 fw-bold mb-4 animate__animated animate__fadeInDown">AI-Powered Resume Analysis</h1>
-                    <p class="lead mb-5 animate__animated animate__fadeInUp animate__delay-1s">Get instant feedback on your resume's strengths and weaknesses. Optimize for ATS and land more interviews.</p>
-                    <a href="/analyze" class="btn btn-primary btn-lg animate__animated animate__fadeInUp animate__delay-2s">Analyze Your Resume Now <i class="fas fa-arrow-right ms-2"></i></a>
-                </div>
-                <div class="col-lg-6 d-none d-lg-block animate__animated animate__fadeInRight animate__delay-1s">
-                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Resume Analysis" class="img-fluid rounded-4 shadow-lg">
-                </div>
+            <div class="col-md-2 mb-4 mb-md-0">
+                <h5 class="mb-3">Resources</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Blog</a></li>
+                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Guides</a></li>
+                    <li class="mb-2"><a href="#" class="text-white text-decoration-none">Help Center</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h5 class="mb-3">Subscribe to our newsletter</h5>
+                <p>Get the latest tips and updates on resume optimization.</p>
+                <form class="mb-3">
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Your email">
+                        <button class="btn btn-primary" type="button">Subscribe</button>
+                    </div>
+                </form>
             </div>
         </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section class="py-5 bg-white">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-md-3">
-                    <div class="stats-card">
-                        <div class="stats-number">98%</div>
-                        <div class="stats-label">ATS Compatibility</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stats-card">
-                        <div class="stats-number">10K+</div>
-                        <div class="stats-label">Resumes Analyzed</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stats-card">
-                        <div class="stats-number">85%</div>
-                        <div class="stats-label">Interview Rate Increase</div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stats-card">
-                        <div class="stats-number">4.9</div>
-                        <div class="stats-label">User Rating</div>
-                    </div>
-                </div>
+        <hr class="my-4">
+        <div class="row">
+            <div class="col-md-6 text-center text-md-start">
+                <p class="mb-0">&copy; 2025 ResuMIND. All rights reserved.</p>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <a href="#" class="text-white text-decoration-none me-3">Privacy Policy</a>
+                <a href="#" class="text-white text-decoration-none me-3">Upload Resume</a>
+                <a href="#" class="text-white text-decoration-none">Terms of Service</a>
             </div>
         </div>
-    </section>
+    </div>
+</footer>
+{% endblock %}
 
-    <!-- Features Section -->
-    <section id="features" class="py-5">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="display-5 fw-bold mb-3">Comprehensive Resume Analysis</h2>
-                <p class="lead text-muted">We analyze every aspect of your resume to give you actionable insights</p>
-            </div>
-            
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="feature-card card h-100">
-                        <div class="card-body text-center p-4">
-                            <div class="feature-icon">
-                                <i class="fas fa-code"></i>
-                            </div>
-                            <h4 class="card-title">Tech Stack Analysis</h4>
-                            <p class="card-text">Detailed breakdown of your technical skills and how they match job requirements.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="feature-card card h-100">
-                        <div class="card-body text-center p-4">
-                            <div class="feature-icon">
-                                <i class="fas fa-briefcase"></i>
-                            </div>
-                            <h4 class="card-title">Experience Evaluation</h4>
-                            <p class="card-text">Analysis of your work history, roles, and measurable achievements.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="feature-card card h-100">
-                        <div class="card-body text-center p-4">
-                            <div class="feature-icon">
-                                <i class="fas fa-graduation-cap"></i>
-                            </div>
-                            <h4 class="card-title">Education & Certifications</h4>
-                            <p class="card-text">Review of your academic background and professional certifications.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="feature-card card h-100">
-                        <div class="card-body text-center p-4">
-                            <div class="feature-icon">
-                                <i class="fas fa-project-diagram"></i>
-                            </div>
-                            <h4 class="card-title">Project Analysis</h4>
-                            <p class="card-text">Evaluation of your projects, technologies used, and impact.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="feature-card card h-100">
-                        <div class="card-body text-center p-4">
-                            <div class="feature-icon">
-                                <i class="fas fa-check-double"></i>
-                            </div>
-                            <h4 class="card-title">ATS Optimization</h4>
-                            <p class="card-text">Keyword analysis and suggestions to beat applicant tracking systems.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="feature-card card h-100">
-                        <div class="card-body text-center p-4">
-                            <div class="feature-icon">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <h4 class="card-title">Career Recommendations</h4>
-                            <p class="card-text">Personalized suggestions for career growth based on your profile.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- How It Works Section -->
-    <section id="how-it-works" class="py-5 bg-light">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="display-5 fw-bold mb-3">How It Works</h2>
-                <p class="lead text-muted">Get your personalized resume analysis in just 3 simple steps</p>
-            </div>
-            
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="card border-0 bg-transparent text-center">
-                        <div class="card-body">
-                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                                <i class="fas fa-upload fa-2x"></i>
-                            </div>
-                            <h4 class="my-3">1. Upload Resume</h4>
-                            <p class="text-muted">Upload your resume in PDF or Word format. It's secure and private.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="card border-0 bg-transparent text-center">
-                        <div class="card-body">
-                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                                <i class="fas fa-cogs fa-2x"></i>
-                            </div>
-                            <h4 class="my-3">2. AI Analysis</h4>
-                            <p class="text-muted">Our advanced AI scans and analyzes every section of your resume.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="card border-0 bg-transparent text-center">
-                        <div class="card-body">
-                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                                <i class="fas fa-chart-pie fa-2x"></i>
-                            </div>
-                            <h4 class="my-3">3. Get Results</h4>
-                            <p class="text-muted">Receive detailed feedback and actionable recommendations.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="text-center mt-5">
-                <a href="/analyze" class="btn btn-primary btn-lg">Start Analyzing Now</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Testimonials Section -->
-    <section id="testimonials" class="py-5">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="display-5 fw-bold mb-3">Success Stories</h2>
-                <p class="lead text-muted">Hear from professionals who improved their resumes with ResumeIQ</p>
-            </div>
-            
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-3">
-                                <img src="https://randomuser.me/api/portraits/women/32.jpg" class="rounded-circle me-3" width="60" height="60" alt="User">
-                                <div>
-                                    <h5 class="mb-0">Sarah Johnson</h5>
-                                    <p class="text-muted mb-0">Software Engineer</p>
-                                </div>
-                            </div>
-                            <p class="card-text">"ResumeIQ helped me identify the missing keywords in my resume. After implementing the suggestions, I got 3 interview calls in a week!"</p>
-                            <div class="text-warning">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-3">
-                                <img src="https://randomuser.me/api/portraits/men/45.jpg" class="rounded-circle me-3" width="60" height="60" alt="User">
-                                <div>
-                                    <h5 class="mb-0">Michael Chen</h5>
-                                    <p class="text-muted mb-0">Data Scientist</p>
-                                </div>
-                            </div>
-                            <p class="card-text">"The ATS optimization feature is a game-changer. I went from 0 responses to multiple interview invitations after using ResumeIQ."</p>
-                            <div class="text-warning">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-3">
-                                <img src="https://randomuser.me/api/portraits/women/68.jpg" class="rounded-circle me-3" width="60" height="60" alt="User">
-                                <div>
-                                    <h5 class="mb-0">Priya Patel</h5>
-                                    <p class="text-muted mb-0">Product Manager</p>
-                                </div>
-                            </div>
-                            <p class="card-text">"The career recommendations helped me position my experience better. I landed my dream job at a FAANG company thanks to ResumeIQ."</p>
-                            <div class="text-warning">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="py-5 bg-primary text-white">
-        <div class="container text-center">
-            <h2 class="display-5 fw-bold mb-4">Ready to Transform Your Resume?</h2>
-            <p class="lead mb-5">Get instant feedback and start getting more interview calls today.</p>
-            <a href="/analyze" class="btn btn-light btn-lg px-5">Analyze My Resume Now</a>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="py-5 bg-dark text-white">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 mb-4 mb-md-0">
-                    <h5 class="mb-3">ResumeIQ</h5>
-                    <p>AI-powered resume analysis to help you land your dream job.</p>
-                    <div class="social-icons">
-                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-linkedin"></i></a>
-                        <a href="#" class="text-white me-3"><i class="fab fa-github"></i></a>
-                    </div>
-                </div>
-                <div class="col-md-2 mb-4 mb-md-0">
-                    <h5 class="mb-3">Product</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Features</a></li>
-                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Pricing</a></li>
-                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">API</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-2 mb-4 mb-md-0">
-                    <h5 class="mb-3">Resources</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Blog</a></li>
-                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Guides</a></li>
-                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Help Center</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5 class="mb-3">Subscribe to our newsletter</h5>
-                    <p>Get the latest tips and updates on resume optimization.</p>
-                    <form class="mb-3">
-                        <div class="input-group">
-                            <input type="email" class="form-control" placeholder="Your email">
-                            <button class="btn btn-primary" type="button">Subscribe</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <hr class="my-4">
-            <div class="row">
-                <div class="col-md-6 text-center text-md-start">
-                    <p class="mb-0">&copy; 2023 ResumeIQ. All rights reserved.</p>
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <a href="#" class="text-white text-decoration-none me-3">Privacy Policy</a>
-                    <a href="#" class="text-white text-decoration-none">Terms of Service</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

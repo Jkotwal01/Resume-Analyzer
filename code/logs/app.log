@@ -1,0 +1,6 @@
+2025-04-10 14:49:37,749 INFO: Resume analyzer startup [in E:\Projects\resume\code\app.py:27]
+2025-04-10 14:49:52,564 INFO: Resume analyzer startup [in E:\Projects\resume\code\app.py:27]
+2025-04-10 14:51:00,620 INFO: Resume analyzer startup [in E:\Projects\resume\code\app.py:27]
+2025-04-10 14:51:01,745 INFO: Resume analyzer startup [in E:\Projects\resume\code\app.py:27]
+2025-04-10 14:51:24,355 ERROR: Error processing resume: base.html [in E:\Projects\resume\code\app.py:139]
+2025-04-10 14:52:15,443 ERROR: Error processing resume: base.html [in E:\Projects\resume\code\app.py:139]

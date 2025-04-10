@@ -1,125 +1,493 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumeIQ - AI-Powered Resume Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .hero-section {
+            background: url('https://images.unsplash.com/photo-1521791055366-0d553872125f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80') no-repeat center center;
+            background-size: cover;
+            position: relative;
+            padding: 100px 0;
+            color: white;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .feature-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            height: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark);
+            margin: 0 10px;
+            padding: 8px 15px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .stats-label {
+            font-size: 1rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(45deg, #4361ee, #4895ef);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white py-3 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <span class="gradient-text">ResumeIQ</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">How It Works</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#testimonials">Testimonials</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary ms-2" href="/analyze">Analyze Now</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-{% block content %}
-<div class="relative overflow-hidden">
     <!-- Hero Section -->
-    <div class="pt-16 pb-32">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="lg:grid lg:grid-cols-12 lg:gap-8">
-                <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
-                    <h1>
-                        <span class="block text-sm font-semibold uppercase tracking-wide text-indigo-600 dark:text-indigo-400">AI-Powered Resume Analysis</span>
-                        <span class="mt-1 block text-4xl tracking-tight font-extrabold sm:text-5xl xl:text-6xl">
-                            <span class="block text-gray-900 dark:text-white">Optimize Your Resume</span>
-                            <span class="block text-indigo-600 dark:text-indigo-400">Stand Out from the Crowd</span>
-                        </span>
-                    </h1>
-                    <p class="mt-3 text-base text-gray-500 dark:text-gray-400 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
-                        Our AI-powered resume analyzer helps you optimize your resume, improve your ATS score, and get more interviews. Get detailed insights and recommendations to make your resume stand out.
-                    </p>
-                    <!-- Replace or update the Get Started button section -->
-                    <div class="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left">
-                        {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('analyze') }}" 
-                               class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-all duration-300">
-                                Get Started
-                                <svg class="ml-2 -mr-1 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                </svg>
-                            </a>
-                            <p class="mt-3 text-sm text-gray-500">
-                                Upload your resume for AI-powered analysis
-                            </p>
-                        {% else %}
-                            <a href="{{ url_for('login', next=url_for('analyze')) }}" 
-                               class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-all duration-300">
-                                Get Started
-                                <svg class="ml-2 -mr-1 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                </svg>
-                            </a>
-                            <p class="mt-3 text-sm text-gray-500">
-                                Sign in to analyze your resume
-                            </p>
-                        {% endif %}
+    <section class="hero-section">
+        <div class="container hero-content">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4 animate__animated animate__fadeInDown">AI-Powered Resume Analysis</h1>
+                    <p class="lead mb-5 animate__animated animate__fadeInUp animate__delay-1s">Get instant feedback on your resume's strengths and weaknesses. Optimize for ATS and land more interviews.</p>
+                    <a href="/analyze" class="btn btn-primary btn-lg animate__animated animate__fadeInUp animate__delay-2s">Analyze Your Resume Now <i class="fas fa-arrow-right ms-2"></i></a>
+                </div>
+                <div class="col-lg-6 d-none d-lg-block animate__animated animate__fadeInRight animate__delay-1s">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Resume Analysis" class="img-fluid rounded-4 shadow-lg">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-5 bg-white">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="stats-number">98%</div>
+                        <div class="stats-label">ATS Compatibility</div>
                     </div>
                 </div>
-                <div class="mt-12 relative sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-6 lg:flex lg:items-center">
-                    <div class="relative mx-auto w-full rounded-lg shadow-lg lg:max-w-md">
-                        <img class="w-full" src="/static/img/resume-analysis.png" alt="Resume Analysis">
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="stats-number">10K+</div>
+                        <div class="stats-label">Resumes Analyzed</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="stats-number">85%</div>
+                        <div class="stats-label">Interview Rate Increase</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="stats-number">4.9</div>
+                        <div class="stats-label">User Rating</div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- Features Section -->
-    <div class="bg-gray-50 dark:bg-gray-800 py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center">
-                <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
-                    Why Choose Our Resume Analyzer?
-                </h2>
-                <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-500 dark:text-gray-400">
-                    Get comprehensive analysis and actionable insights to improve your resume
-                </p>
+    <section id="features" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold mb-3">Comprehensive Resume Analysis</h2>
+                <p class="lead text-muted">We analyze every aspect of your resume to give you actionable insights</p>
             </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <h4 class="card-title">Tech Stack Analysis</h4>
+                            <p class="card-text">Detailed breakdown of your technical skills and how they match job requirements.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="feature-card card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <h4 class="card-title">Experience Evaluation</h4>
+                            <p class="card-text">Analysis of your work history, roles, and measurable achievements.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="feature-card card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <h4 class="card-title">Education & Certifications</h4>
+                            <p class="card-text">Review of your academic background and professional certifications.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="feature-card card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <h4 class="card-title">Project Analysis</h4>
+                            <p class="card-text">Evaluation of your projects, technologies used, and impact.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="feature-card card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-check-double"></i>
+                            </div>
+                            <h4 class="card-title">ATS Optimization</h4>
+                            <p class="card-text">Keyword analysis and suggestions to beat applicant tracking systems.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="feature-card card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h4 class="card-title">Career Recommendations</h4>
+                            <p class="card-text">Personalized suggestions for career growth based on your profile.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-            <div class="mt-16">
-                <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                    <!-- Feature 1 -->
-                    <div class="pt-6">
-                        <div class="flow-root bg-white dark:bg-gray-900 rounded-lg px-6 pb-8">
-                            <div class="-mt-6">
-                                <div class="inline-flex items-center justify-center p-3 bg-indigo-600 rounded-md shadow-lg">
-                                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                                    </svg>
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold mb-3">How It Works</h2>
+                <p class="lead text-muted">Get your personalized resume analysis in just 3 simple steps</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card border-0 bg-transparent text-center">
+                        <div class="card-body">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="fas fa-upload fa-2x"></i>
+                            </div>
+                            <h4 class="my-3">1. Upload Resume</h4>
+                            <p class="text-muted">Upload your resume in PDF or Word format. It's secure and private.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card border-0 bg-transparent text-center">
+                        <div class="card-body">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="fas fa-cogs fa-2x"></i>
+                            </div>
+                            <h4 class="my-3">2. AI Analysis</h4>
+                            <p class="text-muted">Our advanced AI scans and analyzes every section of your resume.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card border-0 bg-transparent text-center">
+                        <div class="card-body">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="fas fa-chart-pie fa-2x"></i>
+                            </div>
+                            <h4 class="my-3">3. Get Results</h4>
+                            <p class="text-muted">Receive detailed feedback and actionable recommendations.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="/analyze" class="btn btn-primary btn-lg">Start Analyzing Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold mb-3">Success Stories</h2>
+                <p class="lead text-muted">Hear from professionals who improved their resumes with ResumeIQ</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="https://randomuser.me/api/portraits/women/32.jpg" class="rounded-circle me-3" width="60" height="60" alt="User">
+                                <div>
+                                    <h5 class="mb-0">Sarah Johnson</h5>
+                                    <p class="text-muted mb-0">Software Engineer</p>
                                 </div>
-                                <h3 class="mt-8 text-lg font-medium text-gray-900 dark:text-white tracking-tight">ATS Optimization</h3>
-                                <p class="mt-5 text-base text-gray-500 dark:text-gray-400">
-                                    Get detailed ATS compatibility analysis and suggestions to improve your resume's visibility.
-                                </p>
+                            </div>
+                            <p class="card-text">"ResumeIQ helped me identify the missing keywords in my resume. After implementing the suggestions, I got 3 interview calls in a week!"</p>
+                            <div class="text-warning">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Feature 2 -->
-                    <div class="pt-6">
-                        <div class="flow-root bg-white dark:bg-gray-900 rounded-lg px-6 pb-8">
-                            <div class="-mt-6">
-                                <div class="inline-flex items-center justify-center p-3 bg-indigo-600 rounded-md shadow-lg">
-                                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                    </svg>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="https://randomuser.me/api/portraits/men/45.jpg" class="rounded-circle me-3" width="60" height="60" alt="User">
+                                <div>
+                                    <h5 class="mb-0">Michael Chen</h5>
+                                    <p class="text-muted mb-0">Data Scientist</p>
                                 </div>
-                                <h3 class="mt-8 text-lg font-medium text-gray-900 dark:text-white tracking-tight">Skills Analysis</h3>
-                                <p class="mt-5 text-base text-gray-500 dark:text-gray-400">
-                                    Identify skill gaps and get recommendations for improvement based on job requirements.
-                                </p>
+                            </div>
+                            <p class="card-text">"The ATS optimization feature is a game-changer. I went from 0 responses to multiple interview invitations after using ResumeIQ."</p>
+                            <div class="text-warning">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Feature 3 -->
-                    <div class="pt-6">
-                        <div class="flow-root bg-white dark:bg-gray-900 rounded-lg px-6 pb-8">
-                            <div class="-mt-6">
-                                <div class="inline-flex items-center justify-center p-3 bg-indigo-600 rounded-md shadow-lg">
-                                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                    </svg>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="https://randomuser.me/api/portraits/women/68.jpg" class="rounded-circle me-3" width="60" height="60" alt="User">
+                                <div>
+                                    <h5 class="mb-0">Priya Patel</h5>
+                                    <p class="text-muted mb-0">Product Manager</p>
                                 </div>
-                                <h3 class="mt-8 text-lg font-medium text-gray-900 dark:text-white tracking-tight">Job Fit Score</h3>
-                                <p class="mt-5 text-base text-gray-500 dark:text-gray-400">
-                                    Get a detailed analysis of how well your resume matches specific job requirements.
-                                </p>
+                            </div>
+                            <p class="card-text">"The career recommendations helped me position my experience better. I landed my dream job at a FAANG company thanks to ResumeIQ."</p>
+                            <div class="text-warning">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-{% endblock %}
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-5 bg-primary text-white">
+        <div class="container text-center">
+            <h2 class="display-5 fw-bold mb-4">Ready to Transform Your Resume?</h2>
+            <p class="lead mb-5">Get instant feedback and start getting more interview calls today.</p>
+            <a href="/analyze" class="btn btn-light btn-lg px-5">Analyze My Resume Now</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-5 bg-dark text-white">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5 class="mb-3">ResumeIQ</h5>
+                    <p>AI-powered resume analysis to help you land your dream job.</p>
+                    <div class="social-icons">
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-4 mb-md-0">
+                    <h5 class="mb-3">Product</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Features</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Pricing</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">API</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 mb-4 mb-md-0">
+                    <h5 class="mb-3">Resources</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Blog</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Guides</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Help Center</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="mb-3">Subscribe to our newsletter</h5>
+                    <p>Get the latest tips and updates on resume optimization.</p>
+                    <form class="mb-3">
+                        <div class="input-group">
+                            <input type="email" class="form-control" placeholder="Your email">
+                            <button class="btn btn-primary" type="button">Subscribe</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0">&copy; 2023 ResumeIQ. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="#" class="text-white text-decoration-none me-3">Privacy Policy</a>
+                    <a href="#" class="text-white text-decoration-none">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

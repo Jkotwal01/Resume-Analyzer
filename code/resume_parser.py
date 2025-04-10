@@ -4,7 +4,7 @@ import re
 import json
 import PyPDF2
 import os
-from typing import Dict, List, Union
+from typing import Dict, List
 from dotenv import load_dotenv
 import docx
 
@@ -26,12 +26,10 @@ class ResumeAnalyzer:
         text = ""
         if file_path.endswith('.pdf'):
             try:
-                # Try PyMuPDF first
                 doc = fitz.open(file_path)
                 for page in doc:
                     text += page.get_text()
             except Exception:
-                # Fallback to PyPDF2
                 with open(file_path, 'rb') as f:
                     reader = PyPDF2.PdfReader(f)
                     for page in reader.pages:
@@ -45,14 +43,10 @@ class ResumeAnalyzer:
     def extract_resume_data(self, file_path: str) -> Dict:
         """Extract and analyze resume data"""
         try:
-            # Try GMINI API first
             response = self._call_gmini_api(file_path)
             if response and response.get('status_code') == 200:
                 return self._parse_gmini_response(response)
-            
-            # Fallback to local parsing
             return self._local_parser(file_path)
-            
         except Exception as e:
             print(f"Error in resume analysis: {str(e)}")
             return self._local_parser(file_path)
@@ -82,15 +76,11 @@ class ResumeAnalyzer:
     def _local_parser(self, file_path: str) -> Dict:
         """Local fallback parser"""
         text = self.extract_text(file_path)
-        
-        # Enhanced regex patterns
         name = self._extract_name(text)
         education = re.findall(r"(?:B\.?Tech|M\.?Tech|Bachelor|Master|Ph\.?D\.?)(?:\sin\s)?(?:[A-Za-z\s]+)?", text)
         experience = re.findall(r"(\d+(?:\.\d+)?)\s*(?:\+\s*)?years?(?:\sof\sexperience)?", text)
         skills = re.findall(r"(?i)(Python|Java|JavaScript|React|Flask|SQL|HTML|CSS|Docker|AWS|Azure|Node\.js)", text)
-
         tech_stack = {skill: self._estimate_skill_level(skill, text) for skill in set(skills)}
-        
         return {
             "name": name,
             "education": education[0] if education else "Not found",
@@ -109,7 +99,6 @@ class ResumeAnalyzer:
             r"^([A-Z][a-z]+(?:\s[A-Z][a-z]+){1,2})",
             r"([A-Z][a-z]+(?:\s[A-Z][a-z]+){1,2})\s*(?:resume|cv)",
         ]
-        
         for pattern in name_patterns:
             matches = re.findall(pattern, text)
             if matches:
@@ -120,18 +109,12 @@ class ResumeAnalyzer:
         """Estimate skill level based on context"""
         skill_lower = skill.lower()
         context = text.lower()
-        
-        # Count mentions
         mentions = context.count(skill_lower)
-        # Look for experience indicators
         expert_indicators = ['expert', 'advanced', 'senior', 'lead']
         intermediate_indicators = ['intermediate', 'proficient']
-        
-        if any(indicator in context[max(0, context.find(skill_lower)-50):context.find(skill_lower)+50] 
-               for indicator in expert_indicators):
+        if any(indicator in context[max(0, context.find(skill_lower)-50):context.find(skill_lower)+50] for indicator in expert_indicators):
             return 5
-        elif any(indicator in context[max(0, context.find(skill_lower)-50):context.find(skill_lower)+50] 
-                for indicator in intermediate_indicators):
+        elif any(indicator in context[max(0, context.find(skill_lower)-50):context.find(skill_lower)+50] for indicator in intermediate_indicators):
             return 4
         elif mentions > 3:
             return 4
@@ -158,7 +141,6 @@ class ResumeAnalyzer:
             r"(?i)(?:current role|position|job title)[:]\s*([^\n]+)",
             r"(?i)(?:senior|junior|lead)?\s*(?:software|data|frontend|backend|full stack|devops)\s*(?:engineer|developer|architect)",
         ]
-        
         for pattern in role_patterns:
             matches = re.findall(pattern, text)
             if matches:
@@ -190,240 +172,94 @@ class ResumeAnalyzer:
                 projects.append({"description": match.strip()})
         return projects
 
-    def analyze_job_fit(self, resume_text: str, job_title: str = "Software Engineer") -> Dict:
-        """Analyze resume fit for a job using Gemini API"""
+    def calculate_ats_score(self, resume_data: Dict) -> int:
+        """Calculate ATS compatibility score"""
+        score = 70  # Base score
+        
+        # Check for key components
+        if resume_data.get('name'): score += 5
+        if resume_data.get('education'): score += 5
+        if resume_data.get('experience'): score += 5
+        if resume_data.get('tech_stack'): score += 5
+        if resume_data.get('summary'): score += 5
+        if resume_data.get('projects'): score += 5
+        
+        return min(score, 100)
+
+    def calculate_job_fit(self, resume_data: Dict, job_title: str, job_desc: str = "") -> Dict:
+        """Calculate job fit score and detailed analysis"""
+        # Initialize scores
+        technical_match = self._calculate_technical_match(resume_data.get('tech_stack', {}), job_title)
+        experience_match = self._calculate_experience_match(resume_data.get('experience', ''), job_title)
+        education_match = self._calculate_education_match(resume_data.get('education', ''), job_title)
+        
+        # Calculate overall score
+        overall_score = int((technical_match * 0.5) + (experience_match * 0.3) + (education_match * 0.2))
+        
+        # Analyze skills
+        required_skills = self._get_required_skills(job_title)
+        present_skills = list(resume_data.get('tech_stack', {}).keys())
+        missing_skills = [skill for skill in required_skills if skill not in present_skills]
+        
+        # Calculate skill matches
+        skill_matches = {}
+        for skill in present_skills:
+            if skill in required_skills:
+                skill_matches[skill] = min(resume_data['tech_stack'].get(skill, 3) * 20, 100)
+        
+        return {
+            'overall_score': overall_score,
+            'technical_match': technical_match,
+            'experience_match': experience_match,
+            'education_match': education_match,
+            'present_skills': present_skills,
+            'missing_skills': missing_skills,
+            'skill_matches': skill_matches
+        }
+
+    def _calculate_technical_match(self, tech_stack: Dict, job_title: str) -> int:
+        """Calculate technical skills match percentage"""
+        required_skills = self._get_required_skills(job_title)
+        if not required_skills:
+            return 75  # Default score if no specific requirements
+            
+        matches = sum(1 for skill in tech_stack if skill in required_skills)
+        return min(int((matches / len(required_skills)) * 100), 100)
+
+    def _calculate_experience_match(self, experience: str, job_title: str) -> int:
+        """Calculate experience match percentage"""
         try:
-            url = f"{GMINI_API_URL}"  # Remove :generateContent?key={GMINI_API_KEY}
-            headers = {
-                'Content-Type': 'application/json',
-                'Authorization': f'Bearer {GMINI_API_KEY}'
-            }
-            
-            prompt = {
-                "contents": [{
-                    "parts": [{
-                        "text": f"""Analyze this resume for a {job_title} position and provide a detailed scoring:
+            years = float(re.findall(r"(\d+(?:\.\d+)?)", experience)[0])
+            if 'senior' in job_title.lower():
+                return min(int((years / 5) * 100), 100)
+            elif 'mid' in job_title.lower():
+                return min(int((years / 3) * 100), 100)
+            else:
+                return min(int((years / 2) * 100), 100)
+        except:
+            return 70  # Default score if experience cannot be parsed
 
-                        Resume Text:
-                        {resume_text}
+    def _calculate_education_match(self, education: str, job_title: str) -> int:
+        """Calculate education match percentage"""
+        education = education.lower()
+        if 'phd' in education:
+            return 100
+        elif 'master' in education:
+            return 90
+        elif 'bachelor' in education or 'b.tech' in education or 'b.e.' in education:
+            return 80
+        return 70  # Default score for other education levels
 
-                        Provide a detailed analysis with the following scores in JSON format:
-                        1. Job Fit Score (0-100): Based on overall match for the position
-                        2. Technical Skills Match (0-100): Based on required technical skills
-                        3. Experience Relevance (0-100): Based on relevant work experience
-                        4. Education Match (0-100): Based on educational requirements
-                        5. Skills Gap Analysis: List of present and missing critical skills
-                        6. Career Level Assessment: Junior/Mid/Senior based on experience
-                        7. Improvement Recommendations: Prioritized list of areas to improve
-
-                        Return the analysis in this exact JSON structure:
-                        {{
-                            "job_fit_score": {{
-                                "overall_score": number,
-                                "technical_match": number,
-                                "experience_match": number,
-                                "education_match": number,
-                                "detailed_breakdown": {{
-                                    "technical_skills": number,
-                                    "experience": number,
-                                    "education": number,
-                                    "project_relevance": number,
-                                    "industry_alignment": number
-                                }}
-                            }}
-                        }}"""
-                    }]
-                }]
-            }
-
-            print("Calling Gemini API...")
-            response = requests.post(url, headers=headers, json=prompt)
-            print(f"API Response Status: {response.status_code}")
-
-            if response.status_code == 200:
-                result = response.json()
-                if 'candidates' in result and result['candidates']:
-                    try:
-                        analysis_text = result['candidates'][0]['content']['parts'][0]['text']
-                        analysis = json.loads(analysis_text)
-                        
-                        # Calculate weighted job fit score
-                        weights = {
-                            'technical_skills': 0.35,
-                            'experience': 0.25,
-                            'education': 0.15,
-                            'project_relevance': 0.15,
-                            'industry_alignment': 0.10
-                        }
-                        
-                        detailed_scores = analysis['job_fit_score']['detailed_breakdown']
-                        weighted_score = sum(
-                            detailed_scores[key] * weight 
-                            for key, weight in weights.items()
-                        )
-                        
-                        analysis['job_fit_score']['overall_score'] = round(weighted_score, 1)
-                        return analysis
-                        
-                    except (KeyError, json.JSONDecodeError) as e:
-                        print(f"Error parsing API response: {e}")
-                        return self._generate_fallback_analysis()
-            
-            print(f"API Error Response: {response.text}")
-            return self._generate_fallback_analysis()
-            
-        except Exception as e:
-            print(f"Error calling Gemini API: {e}")
-            return self._generate_fallback_analysis()
-
-    def _structure_text_response(self, text: str) -> Dict:
-        """Convert unstructured text response to structured format"""
-        # Basic text analysis to extract information
-        skills = re.findall(r'(?i)(?:skills?|technologies?|programming|languages?)[:]\s*([^\n]+)', text)
-        experience = re.findall(r'(?i)(?:experience|work history)[:]\s*([^\n]+)', text)
-        education = re.findall(r'(?i)(?:education|qualification)[:]\s*([^\n]+)', text)
-        
-        return {
-            "ats_score": {
-                "score": 75,  # Default score
-                "format_score": 80,
-                "keyword_score": 70,
-                "optimization_tips": ["Format detected skills sections well", 
-                                    "Include more specific achievements"]
-            },
-            "job_fit_score": 70,  # Default score
-            "technical_assessment": {
-                "present_skills": skills[0].split(',') if skills else [],
-                "missing_skills": [],
-                "skill_levels": {}
-            },
-            "improvement_areas": [{
-                "area": "Skills Enhancement",
-                "importance": "high",
-                "action_items": ["Consider adding more technical skills",
-                               "Quantify achievements with metrics"]
-            }],
-            "strengths": [{
-                "category": "experience",
-                "description": experience[0] if experience else "Experience section needs review",
-                "relevance": 80
-            }],
-            "career_trajectory": {
-                "current_level": "mid",
-                "potential_roles": ["Senior Developer", "Team Lead"],
-                "development_path": ["Enhance technical skills", "Gain leadership experience"]
-            }
-        }
-
-    def _enhance_analysis(self, analysis: Dict) -> Dict:
-        """Enhance the analysis with additional metrics"""
-        # Calculate overall strength score
-        strength_score = sum(s['relevance'] for s in analysis.get('strengths', []))
-        
-        # Calculate skill gap score
-        present_skills = len(analysis.get('technical_assessment', {}).get('present_skills', []))
-        missing_skills = len(analysis.get('technical_assessment', {}).get('missing_skills', []))
-        skill_gap_score = (present_skills / (present_skills + missing_skills)) * 100 if (present_skills + missing_skills) > 0 else 0
-        
-        # Add enhanced metrics
-        analysis['enhanced_metrics'] = {
-            'strength_score': min(strength_score, 100),
-            'skill_gap_score': round(skill_gap_score, 2),
-            'improvement_priority_distribution': {
-                'high': len([i for i in analysis.get('improvement_areas', []) if i['importance'] == 'high']),
-                'medium': len([i for i in analysis.get('improvement_areas', []) if i['importance'] == 'medium']),
-                'low': len([i for i in analysis.get('improvement_areas', []) if i['importance'] == 'low'])
-            }
-        }
-        
-        return analysis
-
-    def _generate_fallback_analysis(self) -> Dict:
-        """Generate fallback analysis when API fails"""
-        return {
-            "job_fit_score": {
-                "overall_score": 65,
-                "technical_match": 70,
-                "experience_match": 65,
-                "education_match": 80,
-                "detailed_breakdown": {
-                    "technical_skills": 70,
-                    "experience": 65,
-                    "education": 80,
-                    "project_relevance": 60,
-                    "industry_alignment": 65
-                }
-            },
-            "ats_score": {
-                "score": 70,
-                "format_score": 80,
-                "keyword_score": 60,
-                "optimization_tips": [
-                    "Use industry-standard section headings",
-                    "Include more keywords from job description",
-                    "Quantify achievements with metrics"
-                ]
-            },
-            "technical_assessment": {
-                "present_skills": ["Python", "JavaScript", "SQL"],
-                "missing_skills": ["AWS", "Docker", "Kubernetes"],
-                "skill_levels": {
-                    "Python": {
-                        "level": "intermediate",
-                        "confidence": 80
-                    }
-                }
-            },
-            "improvement_areas": [
-                {
-                    "title": "Cloud Technologies",
-                    "details": "Gain experience with major cloud platforms",
-                    "priority": "high",
-                    "icon": "cloud"
-                },
-                {
-                    "title": "DevOps Skills",
-                    "details": "Learn containerization and CI/CD practices",
-                    "priority": "medium",
-                    "icon": "cog"
-                }
-            ],
-            "recommendations": [
-                {
-                    "title": "Cloud Certification",
-                    "details": "Obtain AWS or Azure certification",
-                    "type": "certification",
-                    "priority": "high",
-                    "icon": "certificate"
-                },
-                {
-                    "title": "Portfolio Enhancement",
-                    "details": "Build projects showcasing cloud and DevOps skills",
-                    "type": "project",
-                    "priority": "medium",
-                    "icon": "folder"
-                }
-            ],
-            "strengths": [
-                {
-                    "title": "Strong Programming Foundation",
-                    "details": "Solid understanding of programming fundamentals and algorithms",
-                    "icon": "code"
-                },
-                {
-                    "title": "Technical Skills",
-                    "details": "Proficient in multiple programming languages and frameworks",
-                    "icon": "chip"
-                },
-                {
-                    "title": "Problem Solving",
-                    "details": "Strong analytical and problem-solving capabilities",
-                    "icon": "puzzle"
-                }
-            ],
-            "career_trajectory": {
-                "current_level": "mid",
-                "potential_roles": ["Senior Software Engineer", "Lead Developer"],
-                "development_path": ["Get cloud certification", "Lead team projects"]
-            }
-        }
+    def _get_required_skills(self, job_title: str) -> List[str]:
+        """Get required skills based on job title"""
+        title = job_title.lower()
+        if 'frontend' in title:
+            return ['JavaScript', 'HTML', 'CSS', 'React', 'Vue', 'Angular']
+        elif 'backend' in title:
+            return ['Python', 'Java', 'Node.js', 'SQL', 'MongoDB', 'Express']
+        elif 'fullstack' in title or 'full stack' in title:
+            return ['JavaScript', 'HTML', 'CSS', 'Python', 'SQL', 'React', 'Node.js']
+        elif 'devops' in title:
+            return ['Docker', 'Kubernetes', 'AWS', 'CI/CD', 'Linux', 'Python']
+        else:
+            return ['JavaScript', 'Python', 'Java', 'SQL', 'Git']
